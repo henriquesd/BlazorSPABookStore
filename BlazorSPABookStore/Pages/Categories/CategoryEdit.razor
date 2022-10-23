@@ -1,0 +1,77 @@
+﻿@page "/categoryedit"
+@page "/categoryedit/{CategoryId:int}"
+@using BlazorSPABookStore.Interfaces
+@using BlazorSPABookStore.Models
+@using Blazored.Toast.Configuration
+@inject IToastService toastService
+
+<section class="category-edit text-center">
+    <h1 class="page-title">Category</h1>
+    <EditForm Model="@Category" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+
+        <div class="form-group row d-flex justify-content-center">
+            <label for="name" class="col-sm-3">Name: </label>
+            <InputText id="category" class="form-control col-sm-8 col-md-5" @bind-Value="@Category.Name" placeholder="Category"></InputText>
+            <ValidationMessage class="offset-sm-3 col-sm-8 col-md-5" For="@(() => Category.Name)" />
+        </div>
+
+        <button type="submit" class="btn btn-success mr-2">Save category</button>
+
+        <button class="btn btn-info" type="submit" @onclick="@NavigateToCategoriesPage">Back</button>
+    </EditForm>
+</section>
+
+@code {
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    [Inject]
+    public ICategoryService CategoryService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public Category Category { get; set; } = new Category();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CategoryId != 0)
+        {
+            Category = await CategoryService.GetById(CategoryId);
+        }
+    }
+
+    protected async Task HandleValidSubmit()
+    {
+        if (Category.Id == 0)
+        {
+            var categoryAdded = await CategoryService.Add(Category);
+            if (categoryAdded != null)
+            {
+                toastService.ShowSuccess("New category successfully added.");
+                NavigationManager.NavigateTo("/categories");
+            }
+            else
+            {
+                toastService.ShowError("Something went wrong while adding the new category. Please try again.");
+            }
+        }
+        else
+        {
+            var result = await CategoryService.Update(Category);
+            if (result) {
+                toastService.ShowSuccess("Category was successfully updated.");
+                NavigateToCategoriesPage();
+            }
+            else {
+                toastService.ShowError("Something went wrong while updating the category. Please try again.");
+            }
+        }
+    }
+
+    private void NavigateToCategoriesPage()
+    {
+        NavigationManager.NavigateTo("/categories");
+    }
+}

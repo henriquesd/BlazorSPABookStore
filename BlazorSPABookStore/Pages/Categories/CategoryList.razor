@@ -1,0 +1,117 @@
+﻿@page "/categories"
+@using BlazorSPABookStore.Interfaces
+@using BlazorSPABookStore.Models
+@using Blazored.Toast.Configuration
+@inject IJSRuntime JsRuntime
+@inject IToastService toastService
+
+<div class="jumbtron">
+    <h1 class="display-4 text-center">Categories</h1>
+</div>
+
+<div class="col-md-12">
+    <button type="button" class="btn btn-success" @onclick="@AddCategory">New Category</button>
+    <hr />
+</div>
+
+<div class="form-group">
+    <label for="Search">Search</label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-text bg-white">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+        <input type="text" class="form-control" placeholder="Search by category"
+               @bind-value="@SearchTerm" @bind-value:event="oninput" @onkeyup="async () => SearchCategory()">
+        </input>
+    </div>
+</div>
+
+@if (Categories == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-condensed table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th class="col-8 col-sm-8 col-md-7">Category</th>
+                <th class="col-4 col-sm-4 col-md-5">Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Categories)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>
+                        <a href="@($"categoryedit/{category.Id}")" class="btn btn-light">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a class="btn btn-light" @onclick="() => DeleteCategory(category)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Inject]
+    public ICategoryService CategoryService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public IEnumerable<Category> Categories { get; set; }
+    public IEnumerable<Category> CompleteListCategories { get; set; }
+
+    public string SearchTerm { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = (await CategoryService.GetAll()).ToList();
+        CompleteListCategories = Categories;
+    }
+
+    protected void AddCategory()
+    {
+        NavigationManager.NavigateTo("/categoryedit");
+    }
+
+    protected async void DeleteCategory(Category category)
+    {
+        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the category {category.Name}?");
+        if (confirm)
+        {
+            if (await CategoryService.Delete(category.Id))
+            {
+                Categories = (await CategoryService.GetAll()).ToList();
+                CompleteListCategories = Categories;
+
+                toastService.ShowSuccess("Deleted successfully");
+                StateHasChanged();
+            }
+            else
+            {
+                toastService.ShowError("Something went wrong while deleting the category. Please try again.");
+            }
+        }
+    }
+
+    protected void SearchCategory()
+    {
+        if (!string.IsNullOrEmpty(SearchTerm))
+        {
+            var searchTermLowerCase = SearchTerm.ToLower();
+            Categories = CompleteListCategories.Where(b => b.Name.ToLower().Contains(searchTermLowerCase)).ToList();
+        }
+        else
+        {
+            Categories = CompleteListCategories;
+        }
+    }
+}

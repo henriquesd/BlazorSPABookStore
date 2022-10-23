@@ -1,0 +1,128 @@
+﻿@page "/books"
+@using BlazorSPABookStore.Interfaces
+@using BlazorSPABookStore.Models
+@inject IJSRuntime JsRuntime
+@inject IToastService toastService
+
+<div class="jumbtron">
+    <h1 class="display-4 text-center">Books</h1>
+</div>
+
+<div class="col-md-12">
+    <button type="button" class="btn btn-success" @onclick="@AddBook">New Book</button>
+    <hr />
+</div>
+
+<div class="form-group">
+    <label for="Search">Search</label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <div class="input-group-text bg-white">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+         <input type="text" class="form-control" placeholder="Search by title, author or category"
+               @bind-value="@SearchTerm" @bind-value:event="oninput" @onkeyup="async () => SearchBook()">
+          </input>
+    </div>
+</div>
+
+@if (Books == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-condensed table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Publish Date</th>
+                <th>Value</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Books)
+            {
+                <tr>
+                    <td>@book.Name</td>
+                    <td>@book.Author</td>
+                    <td>@book.CategoryName</td>
+                    <td>@book.Description</td>
+                    <td>@book.PublishDate.ToShortDateString()</td>
+                    <td>@book.Value</td>
+                    <td>
+                        <a href="@($"bookedit/{book.Id}")" class="btn btn-light">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a class="btn btn-light" @onclick="() => DeleteBook(book)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Inject]
+    public IBookService BookService { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public IEnumerable<Book> Books { get; set; }
+    public IEnumerable<Book> CompleteListBooks { get; set; }
+
+    public string SearchTerm { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Books = (await BookService.GetAll()).ToList();
+        CompleteListBooks = Books;
+    }
+
+    protected void AddBook()
+    {
+        NavigationManager.NavigateTo("/bookedit");
+    }
+
+    protected async void DeleteBook(Book book)
+    {
+        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the book {book.Name}?");
+        if (confirm)
+        {
+            if (await BookService.Delete(book.Id))
+            {
+                Books = (await BookService.GetAll()).ToList();
+                CompleteListBooks = Books;
+
+                toastService.ShowSuccess("Deleted successfully");
+                StateHasChanged();
+            }
+            else
+            {
+                toastService.ShowError("Something went wrong while deleting the book. Please try again.");
+            }
+
+        }
+    }
+
+    protected void SearchBook()
+    {
+        if (!string.IsNullOrEmpty(SearchTerm))
+        {
+            var searchTermLowerCase = SearchTerm.ToLower();
+            Books = CompleteListBooks.Where(b => b.Name.ToLower().Contains(searchTermLowerCase) ||
+                                    b.Author.ToLower().Contains(searchTermLowerCase) ||
+                                    b.CategoryName.ToLower().Contains(searchTermLowerCase)
+                                ).ToList();
+        } else {
+            Books = CompleteListBooks;
+        }
+    }
+}
