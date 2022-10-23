@@ -2,49 +2,60 @@
 @page "/bookedit/{BookId:int}"
 
 <section class="book-edit text-center">
-    <h1 class="page-title">@Title</h1>
 
+    <h1 class="page-title">@Title</h1>
+    
     <EditForm Model="@Book" OnValidSubmit="@HandleValidSubmit">
         <DataAnnotationsValidator></DataAnnotationsValidator>
 
-        <div class="form-group row">
-            <label for="title" class="col-sm-3">Title: </label>
-            <InputText id="title" class="form-control col-sm-8 col-md-5" @bind-Value="@Book.Name" placeholder="Title"></InputText>
-            <ValidationMessage class="offset-sm-3 col-sm-8" For="@(() => Book.Name)" />
+        <div class="form-group row justify-content-center">
+            <label for="title" class="col-form-label col-sm-2">Title: </label>
+            <div class="col-sm-8 col-md-5">
+                <InputText id="title" class="form-control" @bind-Value="@Book.Name" placeholder="Title"></InputText>
+                <ValidationMessage For="@(() => Book.Name)" />
+            </div>
         </div>
 
-        <div class="form-group row">
-            <label for="description" class="col-sm-3">Description: </label>
-            <InputTextArea id="description" class="form-control col-sm-8 col-md-5" @bind-Value="@Book.Description" placeholder="Description"></InputTextArea>
-            <ValidationMessage class="offset-sm-8 col-md-5" For="@(() => Book.Description)" />
+        <div class="form-group row justify-content-center">
+            <label for="description" class="col-form-label col-sm-2">Description: </label>
+            <div class="col-sm-8 col-md-5">
+                <InputTextArea id="description" class="form-control" @bind-Value="@Book.Description" placeholder="Description"></InputTextArea>
+            </div>
         </div>
 
-        <div class="form-group row">
-            <label for="author" class="col-sm-3">Author: </label>
-            <InputText id="author" class="form-control col-sm-8 col-md-5" @bind-Value="@Book.Author" placeholder="Author"></InputText>
-            <ValidationMessage class="offset-sm-8 col-md-5" For="@(() => Book.Author)" />
+        <div class="form-group row justify-content-center">
+            <label for="author" class="col-form-label col-sm-2">Author: </label>
+            <div class="col-sm-8 col-md-5">
+                <InputText id="author" class="form-control" @bind-Value="@Book.Author" placeholder="Author"></InputText>
+                <ValidationMessage For="@(() => Book.Author)" />
+            </div>
         </div>
 
-        <div class="form-group row">
-            <label for="categoryId" class="col-sm-3">Category: </label>
-            <InputSelect id="categoryId" @bind-Value="@Book.CategoryId" class="form-select form-control col-sm-8 col-md-5" placeholder="Category">
-                @foreach (var category in CategoryList)
-                {
-                    <option value="@category.Id">@category.Name</option>
-                }
-            </InputSelect>
+        <div class="form-group row justify-content-center">
+            <label for="categoryId" class="col-form-label col-sm-2">Category: </label>
+            <div class="col-sm-8 col-md-5">
+                <InputSelect id="categoryId" @bind-Value="@Book.CategoryId" class="form-select form-control" placeholder="Category">
+                    @foreach (var category in CategoryList)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => Book.CategoryId)" />
+            </div>
         </div>
 
-        <div class="form-group row">
-            <label for="publishDate" class="col-sm-3">Publish Date: </label>
-            <InputDate id="publishDate" class="form-control col-sm-8 col-md-5" @bind-Value="@Book.PublishDate" placeholder="PublishDate"></InputDate>
-            <ValidationMessage class="offset-sm-8 col-md-5" For="@(() => Book.PublishDate)" />
+        <div class="form-group row justify-content-center">
+            <label for="publishDate" class="col-form-label col-sm-2">Publish Date: </label>
+            <div class="col-sm-8 col-md-5">
+                <InputDate id="publishDate" class="form-control" @bind-Value="@Book.PublishDate" placeholder="Publish date"></InputDate>
+            </div>
         </div>
 
-        <div class="form-group row">
-            <label for="value" class="col-sm-3">Value: </label>
-            <InputNumber id="value" class="form-control col-sm-8 col-md-5" @bind-Value="@Book.Value" placeholder="Value"></InputNumber>
-            <ValidationMessage class="offset-sm-8 col-md-5" For="@(() => Book.Value)" />
+        <div class="form-group row justify-content-center">
+            <label for="value" class="col-form-label col-sm-2">Value: </label>
+            <div class="col-sm-8 col-md-5">
+                <InputNumber id="value" class="form-control" @bind-Value="@Book.Value" placeholder="Value"></InputNumber>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-success mr-2">Save book</button>

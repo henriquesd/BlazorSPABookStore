@@ -7,13 +7,16 @@
 
 <section class="category-edit text-center">
     <h1 class="page-title">Category</h1>
+
     <EditForm Model="@Category" OnValidSubmit="@HandleValidSubmit">
         <DataAnnotationsValidator></DataAnnotationsValidator>
 
-        <div class="form-group row d-flex justify-content-center">
-            <label for="name" class="col-sm-3">Name: </label>
-            <InputText id="category" class="form-control col-sm-8 col-md-5" @bind-Value="@Category.Name" placeholder="Category"></InputText>
-            <ValidationMessage class="offset-sm-3 col-sm-8 col-md-5" For="@(() => Category.Name)" />
+        <div class="form-group row justify-content-center">
+            <label for="name" class="col-form-label">Name: </label>
+            <div class="col-sm-8 col-md-5">
+                <InputText id="category" class="form-control" @bind-Value="@Category.Name" placeholder="Category"></InputText>
+                <ValidationMessage For="@(() => Category.Name)" />
+            </div>
         </div>
 
         <button type="submit" class="btn btn-success mr-2">Save category</button>
@@ -60,11 +63,13 @@
         else
         {
             var result = await CategoryService.Update(Category);
-            if (result) {
+            if (result)
+            {
                 toastService.ShowSuccess("Category was successfully updated.");
                 NavigateToCategoriesPage();
             }
-            else {
+            else
+            {
                 toastService.ShowError("Something went wrong while updating the category. Please try again.");
             }
         }
