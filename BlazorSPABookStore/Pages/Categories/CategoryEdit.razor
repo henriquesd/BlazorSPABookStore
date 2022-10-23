@@ -6,7 +6,7 @@
 @inject IToastService toastService
 
 <section class="category-edit text-center">
-    <h1 class="page-title">Category</h1>
+    <h1 class="page-title">@Title</h1>
 
     <EditForm Model="@Category" OnValidSubmit="@HandleValidSubmit">
         <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -36,12 +36,15 @@
     public NavigationManager NavigationManager { get; set; }
 
     public Category Category { get; set; } = new Category();
+    
+    protected string Title = "Add new Category";
 
     protected override async Task OnInitializedAsync()
     {
         if (CategoryId != 0)
         {
             Category = await CategoryService.GetById(CategoryId);
+            Title = $"Edit {Category.Name}";
         }
     }
 
