@@ -69,7 +69,7 @@ namespace BlazorSPABookStore.Pages.Books
             }
         }
 
-        protected void NavigateToBooksPage()
+        private void NavigateToBooksPage()
         {
             NavigationManager.NavigateTo("/books");
         }
