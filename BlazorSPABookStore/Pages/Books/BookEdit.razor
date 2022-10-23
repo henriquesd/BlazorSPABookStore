@@ -35,6 +35,7 @@
             <label for="categoryId" class="col-form-label col-sm-2">Category: </label>
             <div class="col-sm-8 col-md-5">
                 <InputSelect id="categoryId" @bind-Value="@Book.CategoryId" class="form-select form-control" placeholder="Category">
+                    <option selected disabled hidden value="0">Select a category</option>
                     @foreach (var category in CategoryList)
                     {
                         <option value="@category.Id">@category.Name</option>

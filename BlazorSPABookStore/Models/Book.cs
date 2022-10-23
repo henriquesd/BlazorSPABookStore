@@ -20,7 +20,8 @@ namespace BlazorSPABookStore.Models
 
         public DateTime PublishDate { get; set; }
 
-        [Required(ErrorMessage = "The field {0} is required")]
+        [Required(ErrorMessage = "The field Category is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "The field Category is required")]
         public int CategoryId { get; set; }
         
         public string CategoryName { get; set; }
