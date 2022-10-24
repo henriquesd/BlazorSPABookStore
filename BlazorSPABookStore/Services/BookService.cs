@@ -2,38 +2,53 @@
 using System.Text.Json;
 using System.Text;
 using BlazorSPABookStore.Interfaces;
+using System.Net.Http.Json;
 
 namespace BlazorSPABookStore.Services
 {
     public class BookService : IBookService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _baseUri;
 
-        public BookService(HttpClient httpClient)
+        public BookService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _configuration = configuration;
+            _baseUri = _configuration.GetSection("BookStoreApi:Url").Value;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<IEnumerable<Book>> GetAll()
         {
-            return await JsonSerializer.DeserializeAsync<IEnumerable<Book>>
-                (await _httpClient.GetStreamAsync($"api/books"), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var response = await httpClient.GetFromJsonAsync<IEnumerable<Book>>($"{_baseUri}api/books");
+
+            return response;
         }
 
         public async Task<Book> GetById(int bookId)
         {
-            return await JsonSerializer.DeserializeAsync<Book>
-                (await _httpClient.GetStreamAsync($"api/books/{bookId}"), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var response = await httpClient.GetFromJsonAsync<Book>($"{_baseUri}api/books/{bookId}");
+
+            return response;
         }
 
         public async Task<Book> Add(Book book)
         {
+            var httpClient = _httpClientFactory.CreateClient(_baseUri);
+
             var bookJson = new StringContent(JsonSerializer.Serialize(book), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("api/books", bookJson);
+            var response = await httpClient.PostAsync($"{_baseUri}api/books", bookJson);
 
             if (response.IsSuccessStatusCode)
             {
+                if (response.StatusCode == System.Net.HttpStatusCode.NoContent) return default(Book);
+
                 return await JsonSerializer.DeserializeAsync<Book>(await response.Content.ReadAsStreamAsync());
             }
 
@@ -42,9 +57,11 @@ namespace BlazorSPABookStore.Services
 
         public async Task<bool> Update(Book book)
         {
+            var httpClient = _httpClientFactory.CreateClient(_baseUri);
+
             var bookJson = new StringContent(JsonSerializer.Serialize(book), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PutAsync($"api/books/{book.Id}", bookJson);
+            var response = await httpClient.PutAsync($"{_baseUri}api/books/{book.Id}", bookJson);
 
             if (response.IsSuccessStatusCode)
                 return true;
@@ -54,13 +71,15 @@ namespace BlazorSPABookStore.Services
 
         public async Task<bool> Delete(int bookId)
         {
-            var result = await _httpClient.DeleteAsync($"api/books/{bookId}");
+            var httpClient = _httpClientFactory.CreateClient(_baseUri);
+
+            var result = await httpClient.DeleteAsync($"{_baseUri}api/books/{bookId}");
 
             if (result.IsSuccessStatusCode)
                 return true;
             else
                 return false;
-            
+
         }
     }
 }

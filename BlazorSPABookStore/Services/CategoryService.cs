@@ -1,8 +1,8 @@
 ﻿using BlazorSPABookStore.Interfaces;
-using Microsoft.AspNetCore.Components;
 using System.Text.Json;
 using System.Text;
 using BlazorSPABookStore.Models;
+using System.Net.Http.Json;
 
 namespace BlazorSPABookStore.Services
 {
@@ -10,30 +10,30 @@ namespace BlazorSPABookStore.Services
     {
         private readonly HttpClient _httpClient;
 
-        public CategoryService(HttpClient httpClient, NavigationManager navigationManager)
+        public CategoryService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
         public async Task<IEnumerable<Category>> GetAll()
         {
-            var result = await JsonSerializer.DeserializeAsync<IEnumerable<Category>>
-                (await _httpClient.GetStreamAsync($"api/categories"), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            var response = await _httpClient.GetFromJsonAsync<IEnumerable<Category>>($"api/categories");
 
-            return result;
+            return response;
         }
 
         public async Task<Category> GetById(int categoryId)
         {
-            return await JsonSerializer.DeserializeAsync<Category>
-                (await _httpClient.GetStreamAsync($"api/categories/{categoryId}"), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            var response = await _httpClient.GetFromJsonAsync<Category>($"api/categories/{categoryId}");
+
+            return response;
         }
 
         public async Task<Category> Add(Category category)
         {
             var categoryJson = new StringContent(JsonSerializer.Serialize(category), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("api/categories", categoryJson);
+            var response = await _httpClient.PostAsync($"api/categories", categoryJson);
 
             if (response.IsSuccessStatusCode)
             {
