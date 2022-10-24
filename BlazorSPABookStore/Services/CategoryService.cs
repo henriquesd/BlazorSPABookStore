@@ -8,32 +8,42 @@ namespace BlazorSPABookStore.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _baseUri;
 
-        public CategoryService(HttpClient httpClient)
+        public CategoryService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _configuration = configuration;
+            _baseUri = _configuration.GetSection("BookStoreApi:Url").Value;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<IEnumerable<Category>> GetAll()
         {
-            var response = await _httpClient.GetFromJsonAsync<IEnumerable<Category>>($"api/categories");
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var response = await httpClient.GetFromJsonAsync<IEnumerable<Category>>($"{_baseUri}api/categories");
 
             return response;
         }
 
         public async Task<Category> GetById(int categoryId)
         {
-            var response = await _httpClient.GetFromJsonAsync<Category>($"api/categories/{categoryId}");
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var response = await httpClient.GetFromJsonAsync<Category>($"{_baseUri}api/categories/{categoryId}");
 
             return response;
         }
 
         public async Task<Category> Add(Category category)
         {
+            var httpClient = _httpClientFactory.CreateClient(_baseUri);
+
             var categoryJson = new StringContent(JsonSerializer.Serialize(category), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"api/categories", categoryJson);
+            var response = await httpClient.PostAsync($"{_baseUri}api/categories", categoryJson);
 
             if (response.IsSuccessStatusCode)
             {
@@ -47,9 +57,11 @@ namespace BlazorSPABookStore.Services
 
         public async Task<bool> Update(Category category)
         {
+            var httpClient = _httpClientFactory.CreateClient(_baseUri);
+
             var categoryJson = new StringContent(JsonSerializer.Serialize(category), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PutAsync($"api/categories/{category.Id}", categoryJson);
+            var response = await httpClient.PutAsync($"{_baseUri}api/categories/{category.Id}", categoryJson);
 
             if (response.IsSuccessStatusCode)
                 return true;
@@ -59,7 +71,9 @@ namespace BlazorSPABookStore.Services
 
         public async Task<bool> Delete(int categoryId)
         {
-            var result = await _httpClient.DeleteAsync($"api/categories/{categoryId}");
+            var httpClient = _httpClientFactory.CreateClient(_baseUri);
+
+            var result = await httpClient.DeleteAsync($"{_baseUri}api/categories/{categoryId}");
 
             if (result.IsSuccessStatusCode)
                 return true;
