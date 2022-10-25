@@ -9,7 +9,7 @@
 </div>
 
 <div class="col-md-12">
-    <button type="button" class="btn btn-success" @onclick="@AddBook">New Book</button>
+    <button type="button" class="btn btn-success" @onclick="@AddBookPage">New Book</button>
     <hr />
 </div>
 
@@ -22,7 +22,7 @@
             </div>
         </div>
          <input type="text" class="form-control" placeholder="Search by title, author or category"
-               @bind-value="@SearchTerm" @bind-value:event="oninput" @onkeyup="async () => SearchBook()">
+               @bind-value="@SearchedValue" @bind-value:event="oninput" @onkeyup="async () => SearchBook()">
           </input>
     </div>
 </div>
@@ -78,7 +78,7 @@ else
     public IEnumerable<Book> Books { get; set; }
     public IEnumerable<Book> CompleteListBooks { get; set; }
 
-    public string SearchTerm { get; set; }
+    public string SearchedValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,7 +86,7 @@ else
         CompleteListBooks = Books;
     }
 
-    protected void AddBook()
+    protected void AddBookPage()
     {
         NavigationManager.NavigateTo("/bookedit");
     }
@@ -114,12 +114,12 @@ else
 
     protected void SearchBook()
     {
-        if (!string.IsNullOrEmpty(SearchTerm))
+        if (!string.IsNullOrEmpty(SearchedValue))
         {
-            var searchTermLowerCase = SearchTerm.ToLower();
-            Books = CompleteListBooks.Where(b => b.Name.ToLower().Contains(searchTermLowerCase) ||
-                                    b.Author.ToLower().Contains(searchTermLowerCase) ||
-                                    b.CategoryName.ToLower().Contains(searchTermLowerCase)
+            var searchedValueLowerCase = SearchedValue.ToLower();
+            Books = CompleteListBooks.Where(b => b.Name.ToLower().Contains(searchedValueLowerCase) ||
+                                    b.Author.ToLower().Contains(searchedValueLowerCase) ||
+                                    b.CategoryName.ToLower().Contains(searchedValueLowerCase)
                                 ).ToList();
         } else {
             Books = CompleteListBooks;
