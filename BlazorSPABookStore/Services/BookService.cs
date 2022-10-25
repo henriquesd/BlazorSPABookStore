@@ -47,8 +47,6 @@ namespace BlazorSPABookStore.Services
 
             if (response.IsSuccessStatusCode)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.NoContent) return default(Book);
-
                 return await JsonSerializer.DeserializeAsync<Book>(await response.Content.ReadAsStreamAsync());
             }
 
@@ -79,7 +77,6 @@ namespace BlazorSPABookStore.Services
                 return true;
             else
                 return false;
-
         }
     }
 }

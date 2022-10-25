@@ -47,8 +47,6 @@ namespace BlazorSPABookStore.Services
 
             if (response.IsSuccessStatusCode)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.NoContent) return default(Category);
-
                 return await JsonSerializer.DeserializeAsync<Category>(await response.Content.ReadAsStreamAsync());
             }
 
