@@ -68,10 +68,7 @@ namespace BlazorSPABookStore.Services
 
             var response = await httpClient.PutAsync($"{_baseUri}api/categories/{category.Id}", categoryJson);
 
-            if (response.IsSuccessStatusCode)
-                return true;
-            else
-                return false;
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> Delete(int categoryId)
@@ -80,10 +77,7 @@ namespace BlazorSPABookStore.Services
 
             var result = await httpClient.DeleteAsync($"{_baseUri}api/categories/{categoryId}");
 
-            if (result.IsSuccessStatusCode)
-                return true;
-            else
-                return false;
+            return result.IsSuccessStatusCode;
         }
     }
 }
