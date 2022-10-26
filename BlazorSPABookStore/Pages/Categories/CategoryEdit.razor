@@ -3,7 +3,7 @@
 @using BlazorSPABookStore.Interfaces
 @using BlazorSPABookStore.Models
 @using Blazored.Toast.Configuration
-@inject IToastService toastService
+@inject IToastService ToastService
 
 <section class="category-edit text-center">
     <h1 class="page-title">@Title</h1>
@@ -44,7 +44,19 @@
         if (CategoryId != 0)
         {
             Category = await CategoryService.GetById(CategoryId);
-            Title = $"Edit {Category.Name}";
+
+            var category = await CategoryService.GetById(CategoryId);
+
+            if (category != null)
+            {
+                Category = category;
+                Title = $"Edit {Category.Name}";
+            }
+            else
+            {
+                Category = new Category();
+                ToastService.ShowError("Something went wrong while loading the category.");
+            }
         }
     }
 
@@ -55,12 +67,12 @@
             var categoryAdded = await CategoryService.Add(Category);
             if (categoryAdded != null)
             {
-                toastService.ShowSuccess("New category successfully added.");
+                ToastService.ShowSuccess("New category successfully added.");
                 NavigationManager.NavigateTo("/categories");
             }
             else
             {
-                toastService.ShowError("Something went wrong while adding the new category. Please try again.");
+                ToastService.ShowError("Something went wrong while adding the new category. Please try again.");
             }
         }
         else
@@ -68,12 +80,12 @@
             var result = await CategoryService.Update(Category);
             if (result)
             {
-                toastService.ShowSuccess("Category was successfully updated.");
+                ToastService.ShowSuccess("Category was successfully updated.");
                 NavigateToCategoriesPage();
             }
             else
             {
-                toastService.ShowError("Something went wrong while updating the category. Please try again.");
+                ToastService.ShowError("Something went wrong while updating the category. Please try again.");
             }
         }
     }

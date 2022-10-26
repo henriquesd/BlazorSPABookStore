@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text;
 using BlazorSPABookStore.Models;
 using System.Net.Http.Json;
+using System.Net;
 
 namespace BlazorSPABookStore.Services
 {
@@ -32,9 +33,15 @@ namespace BlazorSPABookStore.Services
         {
             var httpClient = _httpClientFactory.CreateClient();
 
-            var response = await httpClient.GetFromJsonAsync<Category>($"{_baseUri}api/categories/{categoryId}");
+            var response = await httpClient.GetAsync($"{_baseUri}api/categories/{categoryId}");
 
-            return response;
+            if (response.IsSuccessStatusCode)
+            {
+                return await JsonSerializer.DeserializeAsync<Category>
+                    (await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            }
+
+            return null;
         }
 
         public async Task<Category> Add(Category category)

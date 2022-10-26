@@ -32,9 +32,15 @@ namespace BlazorSPABookStore.Services
         {
             var httpClient = _httpClientFactory.CreateClient();
 
-            var response = await httpClient.GetFromJsonAsync<Book>($"{_baseUri}api/books/{bookId}");
+            var response = await httpClient.GetAsync($"{_baseUri}api/books/{bookId}");
 
-            return response;
+            if (response.IsSuccessStatusCode)
+            {
+                return await JsonSerializer.DeserializeAsync<Book>
+                    (await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            }
+
+            return null;
         }
 
         public async Task<Book> Add(Book book)

@@ -34,8 +34,18 @@ namespace BlazorSPABookStore.Pages.Books
 
             if (BookId != 0)
             {
-                Book = await BookService.GetById(BookId);
-                Title = $"Edit {Book.Name}";
+                var book = await BookService.GetById(BookId);
+
+                if (book != null)
+                {
+                    Book = book;
+                    Title = $"Edit {Book.Name}";
+                }
+                else
+                {
+                    Book = new Book();
+                    ToastService.ShowError("Something went wrong while loading the book.");
+                }
             }
         }
 
