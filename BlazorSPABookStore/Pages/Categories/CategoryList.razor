@@ -3,7 +3,7 @@
 @using BlazorSPABookStore.Models
 @using Blazored.Toast.Configuration
 @inject IJSRuntime JsRuntime
-@inject IToastService toastService
+@inject IToastService ToastService
 
 <div class="jumbtron">
     <h1 class="display-4 text-center">Categories</h1>
@@ -92,12 +92,12 @@ else
                 Categories = (await CategoryService.GetAll()).ToList();
                 CompleteListCategories = Categories;
 
-                toastService.ShowSuccess("Deleted successfully");
+                ToastService.ShowSuccess("Deleted successfully");
                 StateHasChanged();
             }
             else
             {
-                toastService.ShowError("Something went wrong while deleting the category. Please try again.");
+                ToastService.ShowError("Something went wrong while deleting the category. Please try again.");
             }
         }
     }

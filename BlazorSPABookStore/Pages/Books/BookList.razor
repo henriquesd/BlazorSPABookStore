@@ -2,7 +2,7 @@
 @using BlazorSPABookStore.Interfaces
 @using BlazorSPABookStore.Models
 @inject IJSRuntime JsRuntime
-@inject IToastService toastService
+@inject IToastService ToastService
 
 <div class="jumbtron">
     <h1 class="display-4 text-center">Books</h1>
@@ -101,12 +101,12 @@ else
                 Books = (await BookService.GetAll()).ToList();
                 CompleteListBooks = Books;
 
-                toastService.ShowSuccess("Deleted successfully");
+                ToastService.ShowSuccess("Deleted successfully");
                 StateHasChanged();
             }
             else
             {
-                toastService.ShowError("Something went wrong while deleting the book. Please try again.");
+                ToastService.ShowError("Something went wrong while deleting the book. Please try again.");
             }
         }
     }
