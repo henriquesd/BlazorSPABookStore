@@ -21,9 +21,9 @@
                 <i class="fas fa-search"></i>
             </div>
         </div>
-         <input type="text" class="form-control" placeholder="Search by title, author or category"
+        <input type="text" class="form-control" placeholder="Search by title, author or category"
                @bind-value="@SearchedValue" @bind-value:event="oninput" @onkeyup="async () => SearchBook()">
-          </input>
+        </input>
     </div>
 </div>
 
@@ -36,13 +36,13 @@ else
     <table class="table table-condensed table-bordered table-striped table-hover">
         <thead>
             <tr>
-                <th>Book</th>
-                <th>Author</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Publish Date</th>
-                <th>Value</th>
-                <th>Options</th>
+                <th class="col-lg-2">Book</th>
+                <th class="col-lg-1">Author</th>
+                <th class="col-lg-1">Category</th>
+                <th class="col-lg-3">Description</th>
+                <th class="col-lg-2">Publish Date</th>
+                <th class="col-lg-1">Value</th>
+                <th class="col-lg-2">Options</th>
             </tr>
         </thead>
         <tbody>
@@ -84,6 +84,7 @@ else
     {
         Books = (await BookService.GetAll()).ToList();
         CompleteListBooks = Books;
+
     }
 
     protected void AddBookPage()
@@ -108,7 +109,6 @@ else
             {
                 toastService.ShowError("Something went wrong while deleting the book. Please try again.");
             }
-
         }
     }
 
@@ -121,7 +121,9 @@ else
                                     b.Author.ToLower().Contains(searchedValueLowerCase) ||
                                     b.CategoryName.ToLower().Contains(searchedValueLowerCase)
                                 ).ToList();
-        } else {
+        }
+        else
+        {
             Books = CompleteListBooks;
         }
     }
