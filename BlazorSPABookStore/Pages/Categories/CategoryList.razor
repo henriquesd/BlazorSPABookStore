@@ -23,7 +23,7 @@
             </div>
         </div>
         <input type="text" class="form-control" placeholder="Search by category"
-               @bind-value="@SearchTerm" @bind-value:event="oninput" @onkeyup="async () => SearchCategory()">
+               @bind-value="@SearchedValue" @bind-value:event="oninput" @onkeyup="async () => SearchCategory()">
         </input>
     </div>
 </div>
@@ -69,7 +69,7 @@ else
     public IEnumerable<Category> Categories { get; set; }
     public IEnumerable<Category> CompleteListCategories { get; set; }
 
-    public string SearchTerm { get; set; }
+    protected string SearchedValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,10 +104,10 @@ else
 
     protected void SearchCategory()
     {
-        if (!string.IsNullOrEmpty(SearchTerm))
+        if (!string.IsNullOrEmpty(SearchedValue))
         {
-            var searchTermLowerCase = SearchTerm.ToLower();
-            Categories = CompleteListCategories.Where(b => b.Name.ToLower().Contains(searchTermLowerCase)).ToList();
+            var searchedValueLowerCase = SearchedValue.ToLower();
+            Categories = CompleteListCategories.Where(b => b.Name.ToLower().Contains(searchedValueLowerCase)).ToList();
         }
         else
         {

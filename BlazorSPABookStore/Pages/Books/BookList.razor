@@ -78,13 +78,12 @@ else
     public IEnumerable<Book> Books { get; set; }
     public IEnumerable<Book> CompleteListBooks { get; set; }
 
-    public string SearchedValue { get; set; }
+    protected string SearchedValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Books = (await BookService.GetAll()).ToList();
         CompleteListBooks = Books;
-
     }
 
     protected void AddBookPage()
