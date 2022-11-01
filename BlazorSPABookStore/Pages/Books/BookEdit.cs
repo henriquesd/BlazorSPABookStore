@@ -48,34 +48,39 @@ namespace BlazorSPABookStore.Pages.Books
                 }
             }
         }
-
         protected async Task HandleValidSubmit()
         {
             if (Book.Id == 0)
+                await AddBook();
+            else
+                await UpdateBook();
+        }
+
+        private async Task AddBook()
+        {
+            var result = await BookService.Add(Book);
+            if (result != null)
             {
-                var bookAdded = await BookService.Add(Book);
-                if (bookAdded != null)
-                {
-                    ToastService.ShowSuccess("New book successfully added.");
-                    NavigateToBooksPage();
-                }
-                else
-                {
-                    ToastService.ShowError("Something went wrong while adding the new book. Please try again.");
-                }
+                ToastService.ShowSuccess("The book was successfully added.");
+                NavigateToBooksPage();
             }
             else
             {
-                var result = await BookService.Update(Book);
-                if (result)
-                {
-                    ToastService.ShowSuccess("The book was successfully updated.");
-                    NavigateToBooksPage();
-                }
-                else
-                {
-                    ToastService.ShowError("Something went wrong while updating the book. Please try again.");
-                }
+                ToastService.ShowError("Something went wrong while adding the book. Please try again.");
+            }
+        }
+
+        private async Task UpdateBook()
+        {
+            var result = await BookService.Update(Book);
+            if (result)
+            {
+                ToastService.ShowSuccess("The book was successfully updated.");
+                NavigateToBooksPage();
+            }
+            else
+            {
+                ToastService.ShowError("Something went wrong while updating the book. Please try again.");
             }
         }
 

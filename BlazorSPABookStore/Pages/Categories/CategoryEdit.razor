@@ -36,7 +36,7 @@
     public NavigationManager NavigationManager { get; set; }
 
     public Category Category { get; set; } = new Category();
-    
+
     protected string Title = "Add new Category";
 
     protected override async Task OnInitializedAsync()
@@ -63,30 +63,36 @@
     protected async Task HandleValidSubmit()
     {
         if (Category.Id == 0)
+            await AddCategory();
+        else
+            await UpdateCategory();
+    }
+
+    private async Task AddCategory()
+    {
+        var result = await CategoryService.Add(Category);
+        if (result != null)
         {
-            var categoryAdded = await CategoryService.Add(Category);
-            if (categoryAdded != null)
-            {
-                ToastService.ShowSuccess("New category successfully added.");
-                NavigationManager.NavigateTo("/categories");
-            }
-            else
-            {
-                ToastService.ShowError("Something went wrong while adding the new category. Please try again.");
-            }
+            ToastService.ShowSuccess("The category was successfully added.");
+            NavigationManager.NavigateTo("/categories");
         }
         else
         {
-            var result = await CategoryService.Update(Category);
-            if (result)
-            {
-                ToastService.ShowSuccess("Category was successfully updated.");
-                NavigateToCategoriesPage();
-            }
-            else
-            {
-                ToastService.ShowError("Something went wrong while updating the category. Please try again.");
-            }
+            ToastService.ShowError("Something went wrong while adding the category. Please try again.");
+        }
+    }
+
+    private async Task UpdateCategory()
+    {
+        var result = await CategoryService.Update(Category);
+        if (result)
+        {
+            ToastService.ShowSuccess("The category was successfully updated.");
+            NavigateToCategoriesPage();
+        }
+        else
+        {
+            ToastService.ShowError("Something went wrong while updating the category. Please try again.");
         }
     }
 
